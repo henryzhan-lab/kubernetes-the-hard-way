@@ -34,7 +34,7 @@ SSH will be used to configure the machines in the cluster. Verify that you have 
 
 If `root` SSH access is enabled for each of your machines you can skip this section.
 
-By default, a new `debian` install disables SSH access for the `root` user. This is done for security reasons as the `root` user has total administrative control of unix-like systems. If a weak password is used on a machine connected to the internet, well, let's just say it's only a matter of time before your machine belongs to someone else. As mentioned earlier, we are going to enable `root` access over SSH in order to streamline the steps in this tutorial. Security is a tradeoff, and in this case, we are optimizing for convenience. Log on to each machine via SSH using your user account, then switch to the `root` user using the `su` command:
+By default, a new `ubuntu` install disables SSH access for the `root` user. This is done for security reasons as the `root` user has total administrative control of unix-like systems. If a weak password is used on a machine connected to the internet, well, let's just say it's only a matter of time before your machine belongs to someone else. As mentioned earlier, we are going to enable `root` access over SSH in order to streamline the steps in this tutorial. Security is a tradeoff, and in this case, we are optimizing for convenience. Log on to each machine via SSH using your user account, then switch to the `root` user using the `su` command:
 
 ```bash
 su - root
@@ -90,9 +90,9 @@ done < machines.txt
 ```
 
 ```text
-server
-node-0
-node-1
+ubuntu
+ubuntu
+ubuntu
 ```
 
 ## Hostnames
