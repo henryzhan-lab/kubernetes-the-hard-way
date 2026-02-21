@@ -36,7 +36,11 @@ for HOST in node-0 node-1; do
     root@${HOST}:~/
 done
 ```
-
+```bash
+for HOST in node-0 node-1; do
+  ssh -n root@${HOST} mkdir /root/cni-plugins
+done
+```
 ```bash
 for HOST in node-0 node-1; do
   scp \
