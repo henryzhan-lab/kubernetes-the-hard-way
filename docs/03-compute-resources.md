@@ -15,14 +15,13 @@ Each of the columns corresponds to a machine IP address `IPV4_ADDRESS`, fully qu
 Here is an example machine database similar to the one used when creating this tutorial. Notice the IP addresses have been masked out. Your machines can be assigned any IP address as long as each machine is reachable from each other and the `jumpbox`.
 
 ```bash
-cat machines.txt
-```
-
-```text
+cat >machines.txt<<EOF
 XXX.XXX.XXX.XXX server.kubernetes.local server
 XXX.XXX.XXX.XXX node-0.kubernetes.local node-0 10.200.0.0/24
 XXX.XXX.XXX.XXX node-1.kubernetes.local node-1 10.200.1.0/24
+EOF
 ```
+
 
 Now it's your turn to create a `machines.txt` file with the details for the three machines you will be using to create your Kubernetes cluster. Use the example machine database from above and add the details for your machines.
 
@@ -34,25 +33,15 @@ SSH will be used to configure the machines in the cluster. Verify that you have 
 
 If `root` SSH access is enabled for each of your machines you can skip this section.
 
-By default, a new `ubuntu` install disables SSH access for the `root` user. This is done for security reasons as the `root` user has total administrative control of unix-like systems. If a weak password is used on a machine connected to the internet, well, let's just say it's only a matter of time before your machine belongs to someone else. As mentioned earlier, we are going to enable `root` access over SSH in order to streamline the steps in this tutorial. Security is a tradeoff, and in this case, we are optimizing for convenience. Log on to each machine via SSH using your user account, then switch to the `root` user using the `su` command:
+By default, a new `ubuntu` install disables SSH access for the `root` user. This is done for security reasons as the `root` user has total administrative control of unix-like systems. If a weak password is used on a machine connected to the internet, well, let's just say it's only a matter of time before your machine belongs to someone else. As mentioned earlier, we are going to enable `root` access over SSH in order to streamline the steps in this tutorial. Security is a tradeoff, and in this case, we are optimizing for convenience. Assuming you have the private key available on jumbox and all other VMs were created with cloud-init that passed the corresponding publick key to allow non-root user(henryz in this example) to ssh to them without password. With machines.txt available to be used on jumpbox:
 
 ```bash
-su - root
-```
+while read IP FQDN HOST SUBNET; do
+  CMD="echo 'PermitRootLogin yes' | sudo tee -a /etc/ssh/sshd_config && echo 'PermitRootLogin without-password' | sudo tee -a /etc/ssh/sshd_config && sudo systemctl restart sshd"
+  ssh -n henryz@${IP}  "$CMD"
+done < machines.txt```
 
-Edit the `/etc/ssh/sshd_config` SSH daemon configuration file and set the `PermitRootLogin` option to `yes`:
-
-```bash
-sed -i \
-  's/^#*PermitRootLogin.*/PermitRootLogin yes/' \
-  /etc/ssh/sshd_config
-```
-
-Restart the `sshd` SSH server to pick up the updated configuration file:
-
-```bash
-systemctl restart sshd
-```
+The script edit the `/etc/ssh/sshd_config` SSH daemon configuration file and set the `PermitRootLogin` option to `yes` and `without-password` before restarting sshd.
 
 ### Generate and Distribute SSH Keys
 
@@ -73,11 +62,13 @@ Your identification has been saved in /root/.ssh/id_rsa
 Your public key has been saved in /root/.ssh/id_rsa.pub
 ```
 
-Copy the SSH public key to each machine:
+Copy the SSH public key to each machine for root to use:
 
 ```bash
 while read IP FQDN HOST SUBNET; do
-  ssh-copy-id root@${IP}
+  key=$(cat ~/.ssh/id_rsa.pub)
+  CMD="echo $key| sudo tee -a /root/.ssh/authorized_keys" 
+  ssh -n henryz@${IP} "$CMD" 
 done < machines.txt
 ```
 
