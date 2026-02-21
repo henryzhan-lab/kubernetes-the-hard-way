@@ -168,7 +168,7 @@ kubectl apply -f kube-apiserver-to-kubelet.yaml \
   --kubeconfig admin.kubeconfig
 ```
 
-### Verification
+### Verification access to API server from jumpbox
 
 At this point the Kubernetes control plane is up and running. Run the following commands from the `jumpbox` machine to verify it's working:
 
@@ -189,7 +189,7 @@ curl --cacert ca.crt \
   "buildDate": "2025-03-11T19:52:21Z",
   "goVersion": "go1.23.6",
   "compiler": "gc",
-  "platform": "linux/arm64"
+  "platform": "linux/amd64"
 }
 ```
 
