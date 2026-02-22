@@ -78,13 +78,16 @@ Verify if swap is disabled:
 swapon --show
 ```
 
-If output is empty then swap is disabled. If swap is enabled run the following command to disable swap immediately:
+If output is empty then swap is disabled. In our example with VMs created from jammy cloud image, swap is disabled so no need for further oprations. If swap is enabled run the following command to disable swap immediately:
 
 ```bash
 swapoff -a
 ```
 
-> To ensure swap remains off after reboot consult your Linux distro documentation.
+> To ensure swap remains off after reboot consult your Linux distro documentation. Usually we need to comment out swap entry in fstab:
+```bash
+sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+```
 
 Create the installation directories:
 
